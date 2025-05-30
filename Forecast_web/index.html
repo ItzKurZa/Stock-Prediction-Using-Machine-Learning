@@ -1,0 +1,131 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dự đoán việc làm</title>
+  <style>
+    .headerApp {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .headerApp_data {
+        border: 1px solid #555;
+        padding: 20px;
+        border-radius: 4px;
+        background-color: rgb(232,232,232);
+        height: 150px;
+    }
+    table { 
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+    th, td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+    }
+    th { 
+        background-color: #f2f2f2;
+    }
+    img {
+        width: 60%;
+    }
+  </style>
+</head>
+<body>
+<div class="headerApp">
+    <div class="headerApp_data">
+        <h2>Tải lên file dữ liệu</h2>
+        <input type="file" id="fileUpload" />
+        <select id="modelSelect">
+            <option value="xgboost">XGBoost</option>
+            <option value="random_forest">Random Forest</option>
+        </select>
+        <button onclick="uploadFile()">Run</button>
+        <p id="status"></p>
+    </div>
+    <div class="headerApp_img">
+        <img id="accuracyChart" src="http://127.0.0.1:5000/accuracy_graph?model=xgboost" alt="Accuracy Graph" />
+    </div>
+</div>
+<h2>Kết quả dự đoán</h2>
+<table id="resultTable" style="display:none;">
+    <thead>
+        <tr>
+            <th>Năm</th>
+            <th>Trường</th>
+            <th>Ngành học</th>
+            <th>Tỷ lệ có việc làm (%)</th>
+            <th>Mức lương trung bình (triệu VND)</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+  // Khi dropdown thay đổi, cập nhật URL của đồ thị độ chính xác
+  document.getElementById("modelSelect").addEventListener("change", function () {
+      let modelSelect = document.getElementById("modelSelect").value;
+      document.getElementById("accuracyChart").src = `http://127.0.0.1:5000/accuracy_graph?model=${modelSelect}`;
+  });
+
+  function uploadFile() {
+      let fileInput = document.getElementById("fileUpload").files[0];
+      let modelSelect = document.getElementById("modelSelect").value;
+
+      if (!fileInput) {
+          alert("Vui lòng chọn file!");
+          return;
+      }
+
+      let formData = new FormData();
+      formData.append("file", fileInput);
+      formData.append("model", modelSelect);
+
+      document.getElementById("status").innerText = "Đang tải dữ liệu...";
+
+      fetch("http://127.0.0.1:5000/predict", {
+          method: "POST",
+          body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+          // Cập nhật lại ảnh độ chính xác
+          document.getElementById("accuracyChart").src = `http://127.0.0.1:5000/accuracy_graph?model=${modelSelect}`;
+
+          let tableBody = document.getElementById("resultTable").getElementsByTagName("tbody")[0];
+          tableBody.innerHTML = "";
+
+          if (data.predictions && data.predictions.length > 0) {
+              data.predictions.forEach(item => {
+                  let row = tableBody.insertRow();
+                  row.insertCell(0).innerText = item.year || "N/A";
+                  row.insertCell(1).innerText = item.university || "N/A";
+                  row.insertCell(2).innerText = item.degree || "N/A";
+                  row.insertCell(3).innerText = (item.predicted_employment_rate_overall || 0).toFixed(2) + "%";
+                  row.insertCell(4).innerText = ((item.predicted_gross_monthly_mean || 0) * 18500 / 1_000_000).toFixed(2) + " triệu VND";
+              });
+              document.getElementById("resultTable").style.display = "table";
+              document.getElementById("status").innerText = "Dự đoán hoàn thành!";
+          } else {
+              document.getElementById("status").innerText = "Không có dữ liệu dự đoán.";
+              document.getElementById("resultTable").style.display = "none";
+          }
+      })
+      .catch(error => {
+          console.error("Lỗi khi tải dữ liệu:", error);
+          document.getElementById("status").innerText = "Đã xảy ra lỗi khi dự đoán.";
+      });
+  }
+</script>
+
+</body>
+</html>
+
+
+
+ 
