@@ -1,0 +1,6 @@
+Báo cáo chất lượng dữ liệu cho AMZN
+Thời gian tạo: 2025-05-23 10:45:54.879512
+
+Các dòng có dữ liệu thiếu:
+Số lượng dòng: 50
+-------------------
