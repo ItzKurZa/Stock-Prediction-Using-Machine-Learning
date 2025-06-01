@@ -17,3 +17,8 @@ This project leverages machine learning models to predict stock prices based on 
 ├── stock_prediction.py     # Data processing and model training
 ├── requirements.txt        # List of required libraries
 ├── README.md               # Project documentation
+
+:contentReference[oaicite:40]{index=40}
+
+If you need further assistance or have any questions, feel free to ask!
+::contentReference[oaicite:41]{index=41}
