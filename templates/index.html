@@ -98,44 +98,15 @@
                                 <label for="ticker">Mã Chứng Khoán:</label>
                                 <select class="form-control" id="ticker" name="ticker" required>
                                     <option value="">-- Chọn mã chứng khoán --</option>
-                                    <!-- Các công ty công nghệ lớn -->
-                                    <optgroup label="Công nghệ">
+                                    <optgroup label="Danh sách mã được hỗ trợ">
                                         <option value="AAPL">AAPL - Apple Inc.</option>
                                         <option value="MSFT">MSFT - Microsoft Corporation</option>
                                         <option value="GOOGL">GOOGL - Alphabet Inc.</option>
                                         <option value="META">META - Meta Platforms, Inc.</option>
-                                        <option value="NVDA">NVDA - NVIDIA Corporation</option>
-                                    </optgroup>
-                                    <!-- Các công ty thương mại điện tử -->
-                                    <optgroup label="Thương mại điện tử">
                                         <option value="AMZN">AMZN - Amazon.com Inc.</option>
-                                        <option value="BABA">BABA - Alibaba Group</option>
-                                        <option value="SHOP">SHOP - Shopify Inc.</option>
-                                    </optgroup>
-                                    <!-- Các công ty tài chính -->
-                                    <optgroup label="Tài chính">
-                                        <option value="JPM">JPM - JPMorgan Chase</option>
-                                        <option value="V">V - Visa Inc.</option>
-                                        <option value="MA">MA - Mastercard Inc.</option>
-                                    </optgroup>
-                                    <!-- Các công ty ô tô điện -->
-                                    <optgroup label="Ô tô điện">
-                                        <option value="TSLA">TSLA - Tesla, Inc.</option>
-                                        <option value="NIO">NIO - NIO Inc.</option>
-                                        <option value="RIVN">RIVN - Rivian Automotive</option>
-                                    </optgroup>
-                                    <!-- Các công ty viễn thông -->
-                                    <optgroup label="Viễn thông">
-                                        <option value="VZ">VZ - Verizon Communications</option>
-                                        <option value="T">T - AT&T Inc.</option>
                                     </optgroup>
                                 </select>
-                                <div class="mt-2">
-                                    <input type="text" class="form-control" id="custom_ticker" 
-                                           placeholder="Hoặc nhập mã chứng khoán khác" 
-                                           pattern="[A-Za-z]+"
-                                           title="Vui lòng chỉ nhập các chữ cái">
-                                </div>
+                                <small class="form-text text-muted">Hiện tại hệ thống chỉ hỗ trợ dự đoán cho 5 mã cổ phiếu trên.</small>
                             </div>
                         </div>
                         <div class="col-md-4">
@@ -165,7 +136,7 @@
             <p>Đang xử lý dữ liệu và huấn luyện mô hình...</p>
         </div>
 
-        <div id="result">
+        <div id="result">           
             <div class="result-header">
                 <h2>Kết Quả Dự Đoán</h2>
                 <h4 id="ticker-name"></h4>
@@ -217,29 +188,14 @@
             $('#end_date').val(today.toISOString().split('T')[0]);
             $('#start_date').val(oneYearAgo.toISOString().split('T')[0]);
 
-            // Xử lý khi người dùng nhập mã tùy chỉnh
-            $('#custom_ticker').on('input', function() {
-                let customValue = $(this).val().toUpperCase();
-                if(customValue) {
-                    $('#ticker').val(''); // Xóa giá trị của dropdown
-                }
-            });
-
-            // Xử lý khi người dùng chọn từ dropdown
-            $('#ticker').on('change', function() {
-                if($(this).val()) {
-                    $('#custom_ticker').val(''); // Xóa giá trị của input tùy chỉnh
-                }
-            });
-
             // Sửa đổi xử lý form submit
             $('#prediction-form').on('submit', function(e) {
                 e.preventDefault();
                 
-                // Lấy giá trị ticker từ dropdown hoặc input tùy chỉnh
-                let selectedTicker = $('#ticker').val() || $('#custom_ticker').val().toUpperCase();
+                // Lấy giá trị ticker từ dropdown
+                let selectedTicker = $('#ticker').val();
                 if(!selectedTicker) {
-                    alert('Vui lòng chọn hoặc nhập mã chứng khoán');
+                    alert('Vui lòng chọn mã chứng khoán');
                     return;
                 }
 
